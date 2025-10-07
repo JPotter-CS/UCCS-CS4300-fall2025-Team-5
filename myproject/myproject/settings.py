@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-!d!+nq-jok2v*@opa@oifn&&@u5tzttr@)_)s!4uii0h3zh%f5
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '.devedu.io',
+]
 
 
 # Application definition
