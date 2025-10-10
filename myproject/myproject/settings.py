@@ -29,7 +29,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     '.devedu.io',
-    ''.onrender.com'
+    '.onrender.com'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
