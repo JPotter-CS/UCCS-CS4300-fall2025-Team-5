@@ -33,12 +33,12 @@ ALLOWED_HOSTS = [
 ]
 
 RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
-
 CSRF_TRUSTED_ORIGINS = []
 if RENDER_EXTERNAL_HOSTNAME:
     CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
+
+# Also hardcode service domain to be safe:
+CSRF_TRUSTED_ORIGINS.append("https://uccs-cs4300-fall2025-team-5.onrender.com")
 
 
 # Application definition
