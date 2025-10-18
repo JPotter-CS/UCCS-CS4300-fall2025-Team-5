@@ -3,16 +3,24 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
     <title>Recreo</title>
 </head>
 
 <body>
-    <headers>
+    <header>
+        <button id="hamburger" aria-label="Menu">&#9776;</button>
         <h1>Welcome to the Recreo Project.</h1>
-    </headers>
+    </header>
+
+    <!-- Hamburger menu -->
+    <div id="menu" class="menu-hidden">
+        <ul>
+            <li><button id="share-location-button">Share Location</button></li>
+        </ul>
+    </div>
 
     <main>
         <p>
@@ -33,17 +41,14 @@
             {% else %}
             <p class="no-location">No location saved yet.</p>
             {% endif %}
-
-            <button id="detect">Detect My Location</button>
-            <p id="status"></p>
         </div>
     </main>
 
     <!-- Image Section -->
     <div class="image-gallery">
-        <img src="{% static 'beachvolley.jpg' %}" alt="Beach Volleyball" class="project-image">
-        <img src="{% static 'golfcourse.jpg' %}" alt="Golf Course" class="project-image">
-        <img src="{% static 'basketball.jpg' %}" alt="Basketball" class="project-image">
+        <img src="{% static 'beachvolley.jpg' %}" alt="Beach Volleyball" class="project-image" />
+        <img src="{% static 'golfcourse.jpg' %}" alt="Golf Course" class="project-image" />
+        <img src="{% static 'basketball.jpg' %}" alt="Basketball" class="project-image" />
     </div>
 
     <footer>
@@ -57,15 +62,22 @@
             if (parts.length === 2) return parts.pop().split(';').shift();
         }
 
-        document.getElementById("detect").addEventListener("click", () => {
+        document.getElementById('hamburger').addEventListener('click', () => {
+            const menu = document.getElementById('menu');
+            menu.classList.toggle('menu-visible');
+        });
+
+        async function detectAndShareLocation() {
             if (!navigator.geolocation) {
-                document.getElementById("status").textContent = "Geolocation not supported.";
+                alert("Geolocation not supported by your browser.");
                 return;
             }
 
-            document.getElementById("status").textContent = "Detecting location...";
+            try {
+                const pos = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject);
+                });
 
-            navigator.geolocation.getCurrentPosition(async pos => {
                 const res = await fetch("{% url 'save_location' %}", {
                     method: "POST",
                     headers: {
@@ -80,14 +92,19 @@
 
                 const data = await res.json();
                 if (data.ok) {
-                    document.getElementById("status").textContent = "Location saved! Refreshing...";
-                    setTimeout(() => location.reload(), 1000);
+                    alert("Location shared successfully!");
+                    location.reload();
                 } else {
-                    document.getElementById("status").textContent = "Failed to save location.";
+                    alert("Failed to save location.");
                 }
-            }, err => {
-                document.getElementById("status").textContent = "Location access denied.";
-            });
+            } catch (error) {
+                alert("Location access denied or error occurred.");
+            }
+        }
+
+        document.getElementById('share-location-button').addEventListener('click', () => {
+            detectAndShareLocation();
+            document.getElementById('menu').classList.remove('menu-visible');
         });
     </script>
 </body>
