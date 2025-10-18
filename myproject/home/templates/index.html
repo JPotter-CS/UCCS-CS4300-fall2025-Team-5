@@ -3,40 +3,93 @@
 <html lang="en">
 
 <head>
-       
     <meta charset="UTF-8">
-       
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       
     <link rel="stylesheet" href="{% static 'styles.css' %}">
-        <title>Recreo</title>
+    <title>Recreo</title>
 </head>
 
 <body>
-        <headers>
-                <h1>Welcome to the Recreo Project.</h1>
-            </headers>
-        <main>
-                <p>
-                        This app is the future of helping you get outside and experience all the activities the world
-            has to offer, whether that's making new friends, playing pickleball, or going on a nice solo hike. Recreo
-            can help you find whatever suits you best.
-                    </p>
+    <headers>
+        <h1>Welcome to the Recreo Project.</h1>
+    </headers>
+
+    <main>
         <p>
-            <a href="{% url 'location_page' %}">Try the location feature</a>
+            This app is the future of helping you get outside and experience all the activities the world
+            has to offer, whether that's playing pickleball with friends, or going on a nice solo hike. Recreo
+            can help you find whatever suits you best.
         </p>
-           
+
+        <!-- Location Feature Section -->
+        <div class="location-section">
+            <h2>Your Location</h2>
+
+            {% if coords %}
+            <div class="location-display">
+                <p><strong>Latitude:</strong> {{ coords.lat }}</p>
+                <p><strong>Longitude:</strong> {{ coords.lon }}</p>
+            </div>
+            {% else %}
+            <p class="no-location">No location saved yet.</p>
+            {% endif %}
+
+            <button id="detect">Detect My Location</button>
+            <p id="status"></p>
+        </div>
     </main>
+
+    <!-- Image Section -->
     <div class="image-gallery">
-                    <img src="{% static 'beachvolley.jpg' %}" alt="Beach Volleyball" class="project-image">
-                    <img src="{% static 'golfcourse.jpg' %}" alt="Golf Course" class="project-image">
-        <img src="{% static 'basketball.jpg' %}" alt="Golf Course" class="project-image">
-           
+        <img src="{% static 'beachvolley.jpg' %}" alt="Beach Volleyball" class="project-image">
+        <img src="{% static 'golfcourse.jpg' %}" alt="Golf Course" class="project-image">
+        <img src="{% static 'basketball.jpg' %}" alt="Basketball" class="project-image">
     </div>
-        <footer>
+
+    <footer>
         <p>Created by Team 5 - 10/6/25</p>
-           
     </footer>
+
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        document.getElementById("detect").addEventListener("click", () => {
+            if (!navigator.geolocation) {
+                document.getElementById("status").textContent = "Geolocation not supported.";
+                return;
+            }
+
+            document.getElementById("status").textContent = "Detecting location...";
+
+            navigator.geolocation.getCurrentPosition(async pos => {
+                const res = await fetch("{% url 'save_location' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken")
+                    },
+                    body: JSON.stringify({
+                        lat: pos.coords.latitude,
+                        lon: pos.coords.longitude
+                    })
+                });
+
+                const data = await res.json();
+                if (data.ok) {
+                    document.getElementById("status").textContent = "Location saved! Refreshing...";
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    document.getElementById("status").textContent = "Failed to save location.";
+                }
+            }, err => {
+                document.getElementById("status").textContent = "Location access denied.";
+            });
+        });
+    </script>
 </body>
 
 </html>

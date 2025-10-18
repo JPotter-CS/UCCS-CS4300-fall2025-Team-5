@@ -50,6 +50,48 @@ main {
     color: #355e3b; /* forest green */
 }
 
+/* Location Section Styling */
+.location-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #e8f5e9;
+    border-radius: 12px;
+    border: 2px solid #75b79e;
+    box-shadow: 0 3px 10px rgba(55, 150, 131, 0.2);
+}
+
+.location-section h2 {
+    color: #2e7d5c;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.location-display {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #379683;
+}
+
+.location-display p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+}
+
+.no-location {
+    color: #666;
+    font-style: italic;
+}
+
+#status {
+    margin-top: 1rem;
+    font-weight: bold;
+    color: #2e7d5c;
+    min-height: 1.5rem;
+}
+
 /* Footer Styling */
 footer {
     background-color: #379683;
@@ -63,7 +105,7 @@ footer {
     box-shadow: 0 -3px 6px rgba(55, 150, 131, 0.7);
 }
 
-/* Add subtle button style suggestion if needed later */
+/* Button Styling */
 button {
     background-color: #75b79e;
     color: white;
@@ -73,14 +115,19 @@ button {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    font-size: 1rem;
 }
 
 button:hover {
     background-color: #3a7d64;
 }
 
+button:active {
+    transform: scale(0.98);
+}
+
 .image-gallery {
-    display: flex;            
+    display: flex;
     justify-content: center;
     gap: 1.5rem;
     flex-wrap: wrap;
@@ -88,4 +135,3 @@ button:hover {
     max-width: 900px;
     padding-bottom: 2rem;
 }
-

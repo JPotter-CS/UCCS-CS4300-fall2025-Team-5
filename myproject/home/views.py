@@ -4,12 +4,15 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
 import json
 
+@ensure_csrf_cookie
 def index(request):
-    return render(request, 'index.html')
+    #Main page with integrated location feature.
+    coords = request.session.get("coords")
+    return render(request, 'index.html', {"coords": coords})
 
 @require_POST
 def save_location(request):
-    """Receive JSON lat/lon from the browser and store in session."""
+    #Receive JSON lat/lon from the browser and store in session.
     try:
         data = json.loads(request.body.decode("utf-8"))
         lat = float(data["lat"])
@@ -20,10 +23,3 @@ def save_location(request):
     # store coords in session so we can show them later
     request.session["coords"] = {"lat": lat, "lon": lon}
     return JsonResponse({"ok": True, "coords": request.session["coords"]})
-
-from django.views.decorators.csrf import ensure_csrf_cookie
-
-@ensure_csrf_cookie
-def location_page(request):
-    coords = request.session.get("coords")
-    return render(request, "location.html", {"coords": coords})
