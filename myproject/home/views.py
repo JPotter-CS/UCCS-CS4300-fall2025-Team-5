@@ -52,37 +52,36 @@ def save_location(request):
 def activities_page(request):
     coords = request.session.get("coords")
     activities = []
-    if coords and coords.get("lat") and coords.get("lon"):
-        lat = coords["lat"]
-        lon = coords["lon"]
-        api_key = "5ae2e3f221c38a28845f05b61345ed6b877f231fdde9f916173c536a"
-        radius = 1000  # 1km search radius
 
-        url = "https://api.opentripmap.com/0.1/en/places/radius"
-        params = {
-            "radius": radius,
-            "lon": lon,
-            "lat": lat,
-            "kinds": "sport,amusements,adult,interesting_places,natural",  # recreational activities
-            "format": "json",
-            "apikey": api_key
+    if coords and coords.get("lat") and coords.get("lon"):
+        api_key = "BOT2I9wTsq89SHT3q0MHbW9kcMcRP1c9foOKiGj-GjacAa2lZAtZJYKUNhVtMm_sEArMZAV7WZYnF1kF24O8Cg2JgrRonzvHlGWpyIoCqEtR0Qg3QZJp5M8YHBj1aHYx"
+        url = "https://api.yelp.com/v3/businesses/search"
+        headers = {
+            "Authorization": f"Bearer {api_key}"
         }
+        params = {
+            "latitude": coords["lat"],
+            "longitude": coords["lon"],
+            "categories": "active,fitness,arts,localflavor",  # recreational categories
+            "limit": 10,
+            "radius": 10000  # in meters (10 km)
+        }
+
         try:
-            response = requests.get(url, params=params, timeout=6)
+            response = requests.get(url, headers=headers, params=params, timeout=5)
             response.raise_for_status()
-            places = response.json()
-            # Limit to 10 places for simplicity
-            for place in places[:10]:
-                name = place.get("name", "Unnamed activity")
-                kinds = place.get("kinds", "").replace(",", ", ")
-                distance = round(place.get("dist", 0))
+            data = response.json()
+            businesses = data.get("businesses", [])
+            for b in businesses:
                 activities.append({
-                    "name": name,
-                    "description": kinds.title(),
-                    "location": f"{distance} meters from you"
+                    "name": b.get("name"),
+                    "description": ", ".join(b.get("categories", []))[1:-1] if b.get("categories") else "",
+                    "location": b.get("location", {}).get("address1", "") + ", " + b.get("location", {}).get("city", "")
                 })
         except Exception as e:
-            print("OpenTripMap error:", e)
+            print("Yelp API error:", e)
+
     return render(request, "activities.html", {"coords": coords, "activities": activities})
+
 
 
