@@ -48,17 +48,41 @@ def save_location(request):
     request.session["coords"] = {"lat": lat, "lon": lon, "city": city, "state": state}
     return JsonResponse({"ok": True, "coords": request.session["coords"]})
 
-# 
+
 def activities_page(request):
     coords = request.session.get("coords")
-    # Change to fetch activities from an API based on location
     activities = []
-    if coords and coords.get("city"):
-        #Simulated getting activities for that city
-        activities = [
-            {"name": "Hiking at Local Park", "description": "Explore scenic trails near you.", "location": coords["city"]},
-            {"name": "Community Basketball", "description": "Join local pickup games.", "location": coords["city"]},
-            {"name": "Golf Driving Range", "description": "Practice your swing.", "location": coords["city"]},
-        ]
+    if coords and coords.get("lat") and coords.get("lon"):
+        lat = coords["lat"]
+        lon = coords["lon"]
+        api_key = "5ae2e3f221c38a28845f05b61345ed6b877f231fdde9f916173c536a"
+        radius = 10000  # 10km search radius
+
+        url = "https://api.opentripmap.com/0.1/en/places/radius"
+        params = {
+            "radius": radius,
+            "lon": lon,
+            "lat": lat,
+            "kinds": "sport,amusements,adult,interesting_places,natural",  # recreational activities
+            "format": "json",
+            "apikey": api_key
+        }
+        try:
+            response = requests.get(url, params=params, timeout=6)
+            response.raise_for_status()
+            places = response.json()
+            # Limit to 10 places for simplicity
+            for place in places[:10]:
+                name = place.get("name", "Unnamed activity")
+                kinds = place.get("kinds", "").replace(",", ", ")
+                distance = round(place.get("dist", 0))
+                activities.append({
+                    "name": name,
+                    "description": kinds.title(),
+                    "location": f"{distance} meters from you"
+                })
+        except Exception as e:
+            print("OpenTripMap error:", e)
     return render(request, "activities.html", {"coords": coords, "activities": activities})
+
 
