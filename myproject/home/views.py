@@ -56,7 +56,7 @@ def activities_page(request):
         lat = coords["lat"]
         lon = coords["lon"]
         api_key = "5ae2e3f221c38a28845f05b61345ed6b877f231fdde9f916173c536a"
-        radius = 10000  # 10km search radius
+        radius = 1000  # 1km search radius
 
         url = "https://api.opentripmap.com/0.1/en/places/radius"
         params = {
