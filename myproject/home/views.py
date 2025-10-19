@@ -48,6 +48,8 @@ def save_location(request):
     request.session["coords"] = {"lat": lat, "lon": lon, "city": city, "state": state}
     return JsonResponse({"ok": True, "coords": request.session["coords"]})
 
+def meters_to_miles(meters):
+    return round(meters * 0.000621371, 2)
 
 def activities_page(request):
     coords = request.session.get("coords")
@@ -62,10 +64,11 @@ def activities_page(request):
         params = {
             "latitude": coords["lat"],
             "longitude": coords["lon"],
-            "categories": "active,fitness,arts,localflavor",
+            "categories": "active,fitness,parks,golf,hiking,biking",
             "limit": 10,
-            "radius": 10000
+            "radius": 1000  # meters
         }
+
 
         response = requests.get(url, headers=headers, params=params, timeout=5)
         if response.status_code == 200:
@@ -73,10 +76,12 @@ def activities_page(request):
             businesses = data.get("businesses", [])
             print(f"Found {len(businesses)} businesses")
             for b in businesses:
+                distance_miles = meters_to_miles(b.get("distance", 0))
                 activities.append({
                     "name": b.get("name", "Unnamed"),
                     "description": ", ".join([cat['title'] for cat in b.get("categories", [])]),
-                    "location": ", ".join(filter(None, [b.get("location", {}).get("address1"), b.get("location", {}).get("city")]))
+                    "location": ", ".join(filter(None, [b.get("location", {}).get("address1"), b.get("location", {}).get("city")])),
+                    "distance_miles": distance_miles
                 })
             if not activities:
                 print("No activities parsed from API response")
