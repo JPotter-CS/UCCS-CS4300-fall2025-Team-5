@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Nearby Recreational Activities</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header class="header-bar">
+        <div class="header-left">
+            <a href="{% url 'index' %}" class="site-logo-link"><img src="{% static 'logo.png' %}" alt="Recreo Logo" class="site-logo"></a>
+        </div>
+        <h1 class="site-title">Recreational Activities Near You</h1>
+        <div class="header-right"></div>
+    </header>
+    <main>
+        <h2>Activities in {{ coords.city }}, {{ coords.state }}</h2>
+        {% if activities %}
+            <ul class="activities-list">
+            {% for activity in activities %}
+                <li>
+                    <strong>{{ activity.name }}</strong><br>
+                    <span>{{ activity.description }}</span><br>
+                    <em>{{ activity.location }}</em>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No activities found yet for your location.</p>
+        {% endif %}
+    </main>
+    <footer>
+        <p>Created by Team 5 - 10/6/25</p>
+    </footer>
+</body>
+</html>

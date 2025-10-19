@@ -38,19 +38,20 @@
             <h2>Your Location</h2>
 
             {% if coords %}
-            <div class="location-display">
-                {% if coords.city or coords.state %}
-                    <p><strong>City:</strong> {{ coords.city }}</p>
-                    <p><strong>State:</strong> {{ coords.state }}</p>
-                {% else %}
-                    <p><strong>Latitude:</strong> {{ coords.lat }}</p>
-                    <p><strong>Longitude:</strong> {{ coords.lon }}</p>
-                {% endif %}
-                <button class="activity-btn" disabled>Go To Next Feature (Coming Soon!)</button>
-            </div>
+        <div class="location-display">
+            {% if coords.city or coords.state %}
+                <p><strong>City:</strong> {{ coords.city }}</p>
+                <p><strong>State:</strong> {{ coords.state }}</p>
             {% else %}
-            <p class="no-location">No location saved yet.</p>
+                <p><strong>Latitude:</strong> {{ coords.lat }}</p>
+                <p><strong>Longitude:</strong> {{ coords.lon }}</p>
             {% endif %}
+            <a href="{% url 'activities' %}" class="activity-btn">See Nearby Activities</a>
+        </div>
+        {% else %}
+        <p class="no-location">No location saved yet.</p>
+        {% endif %}
+
 
 
         </div>

@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('', index, name='index'),
     path('api/location/', save_location, name='save_location'),
+    path('activities/', activities_page, name='activities'),
 ]
 
 if settings.DEBUG:

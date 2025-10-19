@@ -47,3 +47,18 @@ def save_location(request):
     city, state = reverse_geocode(lat, lon)
     request.session["coords"] = {"lat": lat, "lon": lon, "city": city, "state": state}
     return JsonResponse({"ok": True, "coords": request.session["coords"]})
+
+# 
+def activities_page(request):
+    coords = request.session.get("coords")
+    # Change to fetch activities from an API based on location
+    activities = []
+    if coords and coords.get("city"):
+        #Simulated getting activities for that city
+        activities = [
+            {"name": "Hiking at Local Park", "description": "Explore scenic trails near you.", "location": coords["city"]},
+            {"name": "Community Basketball", "description": "Join local pickup games.", "location": coords["city"]},
+            {"name": "Golf Driving Range", "description": "Practice your swing.", "location": coords["city"]},
+        ]
+    return render(request, "activities.html", {"coords": coords, "activities": activities})
+
