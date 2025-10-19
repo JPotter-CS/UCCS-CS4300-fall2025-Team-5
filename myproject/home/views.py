@@ -54,7 +54,7 @@ def activities_page(request):
     activities = []
 
     if coords and coords.get("lat") and coords.get("lon"):
-        api_key = "YOUR_YELP_API_KEY"
+        api_key = "BOT2I9wTsq89SHT3q0MHbW9kcMcRP1c9foOKiGj-GjacAa2lZAtZJYKUNhVtMm_sEArMZAV7WZYnF1kF24O8Cg2JgrRonzvHlGWpyIoCqEtR0Qg3QZJp5M8YHBj1aHYx"
         url = "https://api.yelp.com/v3/businesses/search"
         headers = {
             "Authorization": f"Bearer {api_key}"
