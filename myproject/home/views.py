@@ -12,18 +12,28 @@ def index(request):
     return render(request, 'index.html', {"coords": coords})
 
 def reverse_geocode(lat, lon):
-    url = f"https://nominatim.openstreetmap.org/reverse"
-    params = {
-        "lat": lat,
-        "lon": lon,
-        "format": "json"
-    }
-    response = requests.get(url, params=params, headers={"User-Agent": "yourproject 1.0"})
-    data = response.json()
-    address = data.get("address", {})
-    city = address.get("city") or address.get("town") or address.get("village") or ""
-    state = address.get("state") or address.get("region") or ""
-    return city, state
+    try:
+        url = "https://nominatim.openstreetmap.org/reverse"
+        params = {
+            "lat": lat,
+            "lon": lon,
+            "format": "json"
+        }
+        headers = {
+            "User-Agent": "RecreoApp/1.0 (contact@example.com)"  # required by Nominatim
+        }
+        response = requests.get(url, params=params, headers=headers, timeout=5)
+        response.raise_for_status()  # triggers error for bad HTTP responses
+
+        data = response.json()
+        address = data.get("address", {})
+        city = address.get("city") or address.get("town") or address.get("village") or "Unknown City"
+        state = address.get("state") or address.get("region") or "Unknown State"
+        return city, state
+    except Exception as e:
+        print("Reverse geocode error:", e)
+        return "Unknown City", "Unknown State"
+
 
 @require_POST
 def save_location(request):
