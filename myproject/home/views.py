@@ -54,7 +54,7 @@ def activities_page(request):
     activities = []
 
     if coords and coords.get("lat") and coords.get("lon"):
-        api_key = "BOT2I9wTsq89SHT3q0MHbW9kcMcRP1c9foOKiGj-GjacAa2lZAtZJYKUNhVtMm_sEArMZAV7WZYnF1kF24O8Cg2JgrRonzvHlGWpyIoCqEtR0Qg3QZJp5M8YHBj1aHYx"
+        api_key = "YOUR_YELP_API_KEY"
         url = "https://api.yelp.com/v3/businesses/search"
         headers = {
             "Authorization": f"Bearer {api_key}"
@@ -62,26 +62,32 @@ def activities_page(request):
         params = {
             "latitude": coords["lat"],
             "longitude": coords["lon"],
-            "categories": "active,fitness,arts,localflavor",  # recreational categories
+            "categories": "active,fitness,arts,localflavor",
             "limit": 10,
-            "radius": 10000  # in meters (10 km)
+            "radius": 10000
         }
 
-        try:
-            response = requests.get(url, headers=headers, params=params, timeout=5)
-            response.raise_for_status()
+        response = requests.get(url, headers=headers, params=params, timeout=5)
+        if response.status_code == 200:
             data = response.json()
             businesses = data.get("businesses", [])
+            print(f"Found {len(businesses)} businesses")
             for b in businesses:
                 activities.append({
-                    "name": b.get("name"),
-                    "description": ", ".join(b.get("categories", []))[1:-1] if b.get("categories") else "",
-                    "location": b.get("location", {}).get("address1", "") + ", " + b.get("location", {}).get("city", "")
+                    "name": b.get("name", "Unnamed"),
+                    "description": ", ".join([cat['title'] for cat in b.get("categories", [])]),
+                    "location": ", ".join(filter(None, [b.get("location", {}).get("address1"), b.get("location", {}).get("city")]))
                 })
-        except Exception as e:
-            print("Yelp API error:", e)
+            if not activities:
+                print("No activities parsed from API response")
+        else:
+            print(f"Yelp API Error: {response.status_code} - {response.text}")
+
+    else:
+        print("No location coordinates in session")
 
     return render(request, "activities.html", {"coords": coords, "activities": activities})
+
 
 
 
