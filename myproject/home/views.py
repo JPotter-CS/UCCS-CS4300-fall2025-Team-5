@@ -20,7 +20,7 @@ def reverse_geocode(lat, lon):
             "format": "json"
         }
         headers = {
-            "User-Agent": "RecreoApp/1.0 (contact@example.com)"  # required by Nominatim
+            "User-Agent": "RecreoApp/1.0 (jpotter4@uccs.edu)"  # required by Nominatim
         }
         response = requests.get(url, params=params, headers=headers, timeout=5)
         response.raise_for_status()  # triggers error for bad HTTP responses
