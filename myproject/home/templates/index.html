@@ -10,9 +10,13 @@
 </head>
 
 <body>
-    <header>
-        <button id="hamburger" aria-label="Menu">&#9776;</button>
-        <h1>Welcome to the Recreo Project.</h1>
+    <header class="header-bar">
+        <div class="header-left">
+            <button id="hamburger" aria-label="Menu">&#9776;</button>
+            <img src="{% static 'recreo.jpg' %}" alt="Recreo Logo" class="site-logo">
+        </div>
+        <h1 class="site-title">Welcome to the Recreo Project.</h1>
+        <div class="header-right"></div>
     </header>
 
     <!-- Hamburger menu -->

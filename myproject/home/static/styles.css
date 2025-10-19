@@ -138,11 +138,12 @@ button:active {
 
 /* Hambooger Styling */
 #hamburger {
-    font-size: 1.8rem;
+    font-size: 2rem;
     background: none;
     border: none;
     cursor: pointer;
-    margin-right: 1rem;
+    margin-right: 0.3rem;
+    color: #3b5d3d;
     vertical-align: middle;
 }
 
@@ -175,4 +176,38 @@ button:active {
 
 #menu li:last-child {
     margin-bottom: 0;
+}
+
+.header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #379683;
+    color: #3b5d3d;
+    padding: 1rem 1.3rem;
+    box-shadow: 0 3px 8px rgba(55, 150, 131, 0.7);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+}
+
+.site-logo {
+    height: 44px;
+    margin-left: 0.7rem;
+}
+
+.site-title {
+    flex: 1;
+    text-align: center;
+    margin: 0;
+    font-size: 2.3rem;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: #3b5d3d;
+}
+
+.header-right {
+    width: 44px; /* Keeps title centered even if nothing in right */
 }
