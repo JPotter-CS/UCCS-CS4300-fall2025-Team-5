@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Location</title>
+</head>
+<body>
+<h1>Your Location</h1>
+{% if coords %}
+<p>Latitude: {{ coords.lat }}</p>
+<p>Longitude: {{ coords.lon }}</p>
+{% else %}
+<p>No location saved yet.</p>
+{% endif %}
+</body>
+</html>

@@ -11,6 +11,12 @@ def index(request):
     coords = request.session.get("coords")
     return render(request, 'index.html', {"coords": coords})
 
+@ensure_csrf_cookie
+def location_page(request):
+    """Display the location page with saved coordinates."""
+    coords = request.session.get('coords', None)
+    return render(request, 'location.html', {'coords': coords})
+
 def reverse_geocode(lat, lon):
     try:
         url = "https://nominatim.openstreetmap.org/reverse"
