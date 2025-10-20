@@ -29,9 +29,10 @@
       <h1 class="hero-title">RECREO</h1>
       <p class="hero-subtitle">Get outdoors and discover new experiences</p>
       <div class="hero-buttons">
-        <a href="#location" class="btn-primary">Share Location</a>
-        <a href="#activities" class="activity-btn">See Activities</a> <!-- changed btn-secondary to activity-btn -->
-        </div>
+        <button id="share-location-button" class="btn-primary">Share Location</button>
+        <a href="#activities" class="activity-btn">See Activities</a>
+      </div>
+
     </div>
   </header>
 
@@ -104,5 +105,53 @@
   <footer>
     <p>Created by Team 5 - 10/6/25</p>
   </footer>
+
+<script>
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+  }
+
+  async function detectAndShareLocation() {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported by your browser.");
+      return;
+    }
+
+    try {
+      const pos = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+
+      const res = await fetch("{% url 'save_location' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: JSON.stringify({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude
+        })
+      });
+
+      const data = await res.json();
+      if (data.ok) {
+        alert("Location shared successfully!");
+        location.reload();
+      } else {
+        alert("Failed to save location.");
+      }
+    } catch (error) {
+      alert("Location access denied or error occurred.");
+    }
+  }
+
+  document.getElementById('share-location-button').addEventListener('click', () => {
+    detectAndShareLocation();
+  });
+</script>
+
 </body>
 </html>
