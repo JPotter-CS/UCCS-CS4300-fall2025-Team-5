@@ -29,7 +29,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     '.devedu.io',
-    '.onrender.com'
+    '.onrender.com',
+    '127.0.0.1', 
+    'localhost'
 ]
 
 RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
