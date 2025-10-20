@@ -2,37 +2,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Nearby Recreational Activities</title>
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Nearby Recreational Activities</title>
+  <link rel="stylesheet" href="{% static 'styles.css' %}" />
 </head>
 <body>
-    <header class="header-bar">
-        <div class="header-left">
-            <a href="{% url 'index' %}" class="site-logo-link"><img src="{% static 'recreo.jpg' %}" alt="Recreo Logo" class="site-logo"></a>
-        </div>
-        <h1 class="site-title">Recreational Activities Near You</h1>
-        <div class="header-right"></div>
-    </header>
-    <main>
+  <!-- Top navigation bar similar to main site -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="{% url 'index' %}" class="site-logo-link">
+        <img src="{% static 'recreo.jpg' %}" alt="Recreo Logo" class="nav-logo" />
+      </a>
+      <ul class="nav-menu">
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="#">Activities</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <div class="navbar-extra">Your adventure awaits</div>
+    </div>
+  </nav>
+
+  <main class="content-wrapper">
+    <section class="activities-header">
+        <h1>Recreational Activities Near You</h1>
+        {% if coords.city and coords.state %}
         <h2>Activities in {{ coords.city }}, {{ coords.state }}</h2>
-        {% if activities %}
-            <ul class="activities-list">
-            {% for activity in activities %}
-                <li>
-                    <strong>{{ activity.name }}</strong><br>
-                    <span>{{ activity.description }}</span><br>
-                    <em>{{ activity.location }}</em><br>
-                    <small>{{ activity.distance_miles }} miles away</small>
-                </li>
-            {% endfor %}
-            </ul>
         {% else %}
-            <p>No activities found yet for your location.</p>
+        <h2>Activities Near Your Location</h2>
         {% endif %}
+    </section>
+    
+    {% if activities %}
+        <ul class="activities-list">
+        {% for activity in activities %}
+            <li class="activity-item">
+            <strong>{{ activity.name }}</strong><br />
+            <span>{{ activity.description }}</span><br />
+            <em>{{ activity.location }}</em><br />
+            <small>{{ activity.distance_miles }} miles away</small>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No activities found yet for your location.</p>
+    {% endif %}
     </main>
-    <footer>
-        <p>Created by Team 5 - 10/6/25</p>
-    </footer>
+
+  <footer>
+    <p>Created by Team 5 - 10/6/25</p>
+  </footer>
 </body>
 </html>

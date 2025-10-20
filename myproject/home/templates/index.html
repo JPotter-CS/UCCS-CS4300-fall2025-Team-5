@@ -1,125 +1,108 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="{% static 'styles.css' %}" />
-    <title>Recreo</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{% static 'styles.css' %}" />
+  <title>Recreo</title>
 </head>
-
 <body>
-    <header class="header-bar">
-        <div class="header-left">
-            <button id="hamburger" aria-label="Menu">&#9776;</button>
-            <img src="{% static 'recreo.jpg' %}" alt="Recreo Logo" class="site-logo">
-        </div>
-        <h1 class="site-title">Welcome to the Recreo Project.</h1>
-        <div class="header-right"></div>
-    </header>
-
-    <!-- Hamburger menu -->
-    <div id="menu" class="menu-hidden">
-        <ul>
-            <li><button id="share-location-button">Share Location</button></li>
-        </ul>
+  <!-- Top navigation bar -->
+  <nav class="navbar">
+    <div class="navbar-content">
+      <img src="{% static 'recreo.jpg' %}" alt="Recreo Logo" class="nav-logo">
+      <ul class="nav-menu">
+        <li><a href="#">About</a></li>
+        <li><a href="#">Activities</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <div class="navbar-extra">
+        <span class="navbar-cta">Your adventure awaits</span>
+      </div>
     </div>
+  </nav>
 
-    <main>
-        <p>
-            This app is the future of helping you get outside and experience all the activities the world
-            has to offer, whether that's playing pickleball with friends, or going on a nice solo hike. Recreo
-            can help you find whatever suits you best.
-        </p>
+  <!-- Hero section -->
+  <header class="hero-section" style="background-image: url('{% static 'hero_bg.jpg' %}');">
+    <div class="hero-overlay">
+      <h1 class="hero-title">RECREO</h1>
+      <p class="hero-subtitle">Get outdoors and discover new experiences</p>
+      <div class="hero-buttons">
+        <a href="#location" class="btn-primary">Share Location</a>
+        <a href="#activities" class="activity-btn">See Activities</a> <!-- changed btn-secondary to activity-btn -->
+        </div>
+    </div>
+  </header>
 
-        <!-- Location Feature Section -->
-        <div class="location-section">
-            <h2>Your Location</h2>
+  <!-- Welcome / App Highlight Section -->
+  <main>
+    <section class="welcome-section">
+      <h2>Welcome to the Recreo Project</h2>
+      <p>
+        Recreo is your go-to app for discovering outdoor adventures—whether that's playing pickleball with friends or finding a peaceful hiking trail.
+      </p>
+      <div class="feature-icons">
+        <div>
+          <img src="{% static 'icon_trail.svg' %}" alt="Trail icon">
+          <p>Find Trails</p>
+        </div>
+        <div>
+          <img src="{% static 'icon_friends.svg' %}" alt="Friends icon">
+          <p>Play with Friends</p>
+        </div>
+        <div>
+          <img src="{% static 'icon_events.svg' %}" alt="Events icon">
+          <p>Discover Events</p>
+        </div>
+        <div>
+          <img src="{% static 'icon_location.svg' %}" alt="Location icon">
+          <p>Nearby Activities</p>
+        </div>
+      </div>
+    </section>
 
-            {% if coords %}
+    <!-- Feature / Info cards, inspired by your highlights section -->
+    <section class="card-section">
+      <div class="feature-card">
+        <img src="{% static 'beachvolley.jpg' %}" alt="Beach Volleyball">
+        <h3>Social Sports</h3>
+        <p>Find Activities like volleyball, basketball, and more.</p>
+      </div>
+      <div class="feature-card">
+        <img src="{% static 'golfcourse.jpg' %}" alt="Golf Course">
+        <h3>Scenic Spots</h3>
+        <p>Explore the best local parks and courses for outdoor fun and fitness.</p>
+      </div>
+      <div class="feature-card">
+        <img src="{% static 'basketball.jpg' %}" alt="Basketball">
+        <h3>Community Events</h3>
+        <p>Find and attend events to meet new people and try new activities.</p>
+      </div>
+    </section>
+
+    <!-- Optional: Your existing location section, styled as card -->
+    <section class="location-section" id="location">
+      <h2>Your Location</h2>
+      {% if coords %}
         <div class="location-display">
-            {% if coords.city or coords.state %}
-                <p><strong>City:</strong> {{ coords.city }}</p>
-                <p><strong>State:</strong> {{ coords.state }}</p>
-            {% else %}
-                <p><strong>Latitude:</strong> {{ coords.lat }}</p>
-                <p><strong>Longitude:</strong> {{ coords.lon }}</p>
-            {% endif %}
-            <a href="{% url 'activities' %}" class="activity-btn">See Nearby Activities</a>
+          {% if coords.city or coords.state %}
+            <p><strong>City:</strong> {{ coords.city }}</p>
+            <p><strong>State:</strong> {{ coords.state }}</p>
+          {% else %}
+            <p><strong>Latitude:</strong> {{ coords.lat }}</p>
+            <p><strong>Longitude:</strong> {{ coords.lon }}</p>
+          {% endif %}
+          <a href="{% url 'activities' %}" class="activity-btn">See Nearby Activities</a>
         </div>
-        {% else %}
+      {% else %}
         <p class="no-location">No location saved yet.</p>
-        {% endif %}
+      {% endif %}
+    </section>
+  </main>
 
-
-
-        </div>
-    </main>
-
-    <!-- Image Section -->
-    <div class="image-gallery">
-        <img src="{% static 'beachvolley.jpg' %}" alt="Beach Volleyball" class="project-image" />
-        <img src="{% static 'golfcourse.jpg' %}" alt="Golf Course" class="project-image" />
-        <img src="{% static 'basketball.jpg' %}" alt="Basketball" class="project-image" />
-    </div>
-
-    <footer>
-        <p>Created by Team 5 - 10/6/25</p>
-    </footer>
-
-    <script>
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-
-        document.getElementById('hamburger').addEventListener('click', () => {
-            const menu = document.getElementById('menu');
-            menu.classList.toggle('menu-visible');
-        });
-
-        async function detectAndShareLocation() {
-            if (!navigator.geolocation) {
-                alert("Geolocation not supported by your browser.");
-                return;
-            }
-
-            try {
-                const pos = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject);
-                });
-
-                const res = await fetch("{% url 'save_location' %}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": getCookie("csrftoken")
-                    },
-                    body: JSON.stringify({
-                        lat: pos.coords.latitude,
-                        lon: pos.coords.longitude
-                    })
-                });
-
-                const data = await res.json();
-                if (data.ok) {
-                    alert("Location shared successfully!");
-                    location.reload();
-                } else {
-                    alert("Failed to save location.");
-                }
-            } catch (error) {
-                alert("Location access denied or error occurred.");
-            }
-        }
-
-        document.getElementById('share-location-button').addEventListener('click', () => {
-            detectAndShareLocation();
-            document.getElementById('menu').classList.remove('menu-visible');
-        });
-    </script>
+  <footer>
+    <p>Created by Team 5 - 10/6/25</p>
+  </footer>
 </body>
-
 </html>
