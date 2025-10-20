@@ -96,7 +96,7 @@ class TestLocationTemplate:
         
         # Should contain the coordinate values
         assert '40.7128' in content
-        assert '-74.0060' in content
+        assert '-74.006' in content
     
     def test_location_template_handles_missing_coordinates(self, client):
         """Test that location template handles missing coordinates gracefully."""

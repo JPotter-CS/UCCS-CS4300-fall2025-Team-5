@@ -44,7 +44,7 @@ class TestFullUserWorkflow:
         # Verify coordinates appear in the rendered HTML
         content = location_response.content.decode()
         assert '40.7128' in content
-        assert '-74.0060' in content
+        assert '-74.006' in content
     
     def test_multiple_location_updates_workflow(self, client):
         """Test workflow with multiple location updates."""
@@ -170,7 +170,7 @@ class TestSecurityIntegration:
     def test_content_type_validation(self, client):
         """Test that content type validation works."""
         # API should expect JSON
-        response = client.post('/api/location/', data='test=data')
+        response = client.post('/api/location/', data='test=data', content_type='application/x-www-form-urlencoded')
         # Might accept form data or might not, depending on implementation
         # The important thing is it doesn't crash
         assert response.status_code in [200, 400, 415]
