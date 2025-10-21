@@ -339,3 +339,21 @@ footer {
   color: #888;
   font-size: 1em;
 }
+
+
+/* new styles for map */
+/* Map container styling */
+#map-container {
+  display: flex;
+  justify-content: center;
+  margin: 2em 0;
+}
+
+#map {
+  height: 400px;
+  width: 90%;
+  max-width: 700px;
+  border-radius: 15px;
+  background-color: var(--olivine);
+  box-shadow: 0 7px 24px 0 rgba(0, 0, 0, 0.1);
+}

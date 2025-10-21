@@ -5,52 +5,139 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Nearby Recreational Activities</title>
+
+  <!-- Local stylesheet -->
   <link rel="stylesheet" href="{% static 'styles.css' %}" />
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet/dist/leaflet.css"
+  />
 </head>
+
 <body>
-  <!-- Top navigation bar similar to main site -->
+  <!-- Top navigation bar -->
   <nav class="navbar">
     <div class="navbar-content">
       <a href="{% url 'index' %}" class="site-logo-link">
         <img src="{% static 'recreo.jpg' %}" alt="Recreo Logo" class="nav-logo" />
       </a>
+
       <ul class="nav-menu">
         <li><a href="{% url 'index' %}">Home</a></li>
         <li><a href="#">Activities</a></li>
         <li><a href="#">Contact</a></li>
       </ul>
+
       <div class="navbar-extra">Your adventure awaits</div>
     </div>
   </nav>
 
   <main class="content-wrapper">
     <section class="activities-header">
-        <h1>Recreational Activities Near You</h1>
-        {% if coords.city and coords.state %}
+      <h1>Recreational Activities Near You</h1>
+      {% if coords.city and coords.state %}
         <h2>Activities in {{ coords.city }}, {{ coords.state }}</h2>
-        {% else %}
+      {% else %}
         <h2>Activities Near Your Location</h2>
-        {% endif %}
+      {% endif %}
     </section>
-    
+
     {% if activities %}
-        <ul class="activities-list">
+      <ul class="activities-list">
         {% for activity in activities %}
-            <li class="activity-item">
+          <li class="activity-item">
             <strong>{{ activity.name }}</strong><br />
             <span>{{ activity.description }}</span><br />
             <em>{{ activity.location }}</em><br />
             <small>{{ activity.distance_miles }} miles away</small>
-            </li>
+          </li>
         {% endfor %}
-        </ul>
+      </ul>
     {% else %}
-        <p>No activities found yet for your location.</p>
+      <p>No activities found yet for your location.</p>
     {% endif %}
-    </main>
+  </main>
+
+  <!-- Map container -->
+  <div id="map-container">
+    <div id="map"></div>
+  </div>
 
   <footer>
     <p>Created by Team 5 - 10/6/25</p>
   </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showMap, showError);
+      } else {
+        console.log("Geolocation not supported by this browser.");
+      }
+    });
+
+    function showMap(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      const map = L.map("map").setView([lat, lon], 13);
+
+      // Add OpenStreetMap tiles
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+        maxZoom: 19
+      }).addTo(map);
+
+      // Add user's blue marker
+      L.marker([lat, lon], {
+        icon: L.icon({
+          iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+          iconSize: [32, 32],
+          iconAnchor: [16, 32]
+        })
+      })
+        .addTo(map)
+        .bindPopup("You are here")
+        .openPopup();
+
+      // Activity markers
+      const activities = [
+        {% for activity in activities %}
+          {
+            name: "{{ activity.name|escapejs }}",
+            description: "{{ activity.description|escapejs }}",
+            lat: {{ activity.lat|default:0 }},
+            lon: {{ activity.lon|default:0 }}
+          },
+        {% endfor %}
+      ];
+
+      activities.forEach((act) => {
+        if (act.lat && act.lon) {
+          L.marker([act.lat, act.lon], {
+            icon: L.icon({
+              iconUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+              iconSize: [32, 32],
+              iconAnchor: [16, 32]
+            })
+          })
+            .addTo(map)
+            .bindPopup(`<b>${act.name}</b><br>${act.description}`);
+        }
+      });
+
+      // Fix for hidden map rendering
+      setTimeout(() => map.invalidateSize(), 300);
+    }
+
+    function showError(error) {
+      console.warn("Geolocation error:", error.message);
+    }
+  </script>
 </body>
 </html>
