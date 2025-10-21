@@ -29,7 +29,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     '.devedu.io',
-    '.onrender.com'
+    '.onrender.com',
+    '127.0.0.1', 
+    'localhost'
 ]
 
 RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
@@ -132,6 +134,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'home' / 'static',  # include app-level static folder in search paths
+]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type

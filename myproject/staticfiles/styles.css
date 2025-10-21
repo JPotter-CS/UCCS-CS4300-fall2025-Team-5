@@ -1,0 +1,137 @@
+/* Global Styles */
+body {
+    font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', Arial, sans-serif;
+    background: linear-gradient(to bottom right, #a8e6cf, #dcedc1); /* soft green gradient */
+    color: #2e4a1f; /* dark green text */
+    margin: 0;
+    padding: 0;
+}
+
+headers {
+    background-color: #379683; /* deep teal green */
+    color: #3b5d3d;
+    text-align: center;
+    padding: 2.5rem 1rem;
+    box-shadow: 0 3px 8px rgba(55, 150, 131, 0.7);
+}
+
+headers h1 {
+    font-size: 3rem;
+    margin: 0;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+/* Image Styling */
+.project-image {
+    width: 320px;
+    height: auto;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(55, 150, 131, 0.5);
+    display: block;
+    margin: 1.5rem auto;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-image:hover {
+    transform: scale(1.08);
+}
+
+/* Main Content */
+main {
+    max-width: 720px;
+    margin: 2rem auto;
+    padding: 1.5rem 2rem 5rem 2rem; /* Bottom padding for footer */
+    background: #f0f8e6; /* very light green */
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(82, 140, 71, 0.25);
+    font-size: 1.2rem;
+    line-height: 1.7;
+    color: #355e3b; /* forest green */
+}
+
+/* Location Section Styling */
+.location-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #e8f5e9;
+    border-radius: 12px;
+    border: 2px solid #75b79e;
+    box-shadow: 0 3px 10px rgba(55, 150, 131, 0.2);
+}
+
+.location-section h2 {
+    color: #2e7d5c;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.location-display {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #379683;
+}
+
+.location-display p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+}
+
+.no-location {
+    color: #666;
+    font-style: italic;
+}
+
+#status {
+    margin-top: 1rem;
+    font-weight: bold;
+    color: #2e7d5c;
+    min-height: 1.5rem;
+}
+
+/* Footer Styling */
+footer {
+    background-color: #379683;
+    color: #e0f2f1;
+    text-align: center;
+    font-size: 0.95rem;
+    padding: 1rem 1rem;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    box-shadow: 0 -3px 6px rgba(55, 150, 131, 0.7);
+}
+
+/* Button Styling */
+button {
+    background-color: #75b79e;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.4rem;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 1rem;
+}
+
+button:hover {
+    background-color: #3a7d64;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.image-gallery {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin: 2rem auto;
+    max-width: 900px;
+    padding-bottom: 2rem;
+}

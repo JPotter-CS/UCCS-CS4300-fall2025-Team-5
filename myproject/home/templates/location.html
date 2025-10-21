@@ -1,64 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Location Detection</title>
+    <title>Location</title>
 </head>
-
 <body>
-    <h1>Your Location</h1>
-
-    {% if coords %}
-    <p>Latitude: {{ coords.lat }}</p>
-    <p>Longitude: {{ coords.lon }}</p>
-    {% else %}
-    <p>No location saved yet.</p>
-    {% endif %}
-
-    <button id="detect">Detect My Location</button>
-    <p id="status"></p>
-
-    <script>
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-
-        document.getElementById("detect").addEventListener("click", () => {
-            if (!navigator.geolocation) {
-                document.getElementById("status").textContent = "Geolocation not supported.";
-                return;
-            }
-
-            document.getElementById("status").textContent = "Detecting location...";
-
-            navigator.geolocation.getCurrentPosition(async pos => {
-                const res = await fetch("{% url 'save_location' %}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": getCookie("csrftoken")
-                    },
-                    body: JSON.stringify({
-                        lat: pos.coords.latitude,
-                        lon: pos.coords.longitude
-                    })
-                });
-
-                const data = await res.json();
-                if (data.ok) {
-                    document.getElementById("status").textContent = "Location saved! Refreshing...";
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    document.getElementById("status").textContent = "Failed to save location.";
-                }
-            }, err => {
-                document.getElementById("status").textContent = "Location access denied.";
-            });
-        });
-    </script>
+<h1>Your Location</h1>
+{% if coords %}
+<p>Latitude: {{ coords.lat }}</p>
+<p>Longitude: {{ coords.lon }}</p>
+{% else %}
+<p>No location saved yet.</p>
+{% endif %}
 </body>
-
 </html>
