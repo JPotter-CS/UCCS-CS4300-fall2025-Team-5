@@ -9,33 +9,45 @@ permissions:
 
 jobs:
   review:
-    # harmlessly skips until Jake adds the secret
-    if: ${{ secrets.OPENAI_API_KEY != '' }}
     runs-on: ubuntu-latest
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
     steps:
+      - name: Check for API key
+        id: check_key
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "missing_key=true" >> $GITHUB_OUTPUT
+          else
+            echo "missing_key=false" >> $GITHUB_OUTPUT
+          fi
+      
       - uses: actions/checkout@v4
+        if: steps.check_key.outputs.missing_key == 'false'
         with:
           fetch-depth: 0
 
       - uses: actions/setup-python@v5
+        if: steps.check_key.outputs.missing_key == 'false'
         with:
           python-version: "3.11"
 
       - name: Install deps
+        if: steps.check_key.outputs.missing_key == 'false'
         run: |
           python -m pip install --upgrade pip
           pip install openai==1.* requests
 
       - name: Build PR diff
+        if: steps.check_key.outputs.missing_key == 'false'
         run: |
           git fetch origin ${{ github.base_ref }} --depth=1
           git diff --unified=0 --no-color origin/${{ github.base_ref }}...HEAD > pr.diff
           head -c 120000 pr.diff > pr_truncated.diff
 
       - name: Run AI review
+        if: steps.check_key.outputs.missing_key == 'false'
         run: |
           python .github/scripts/ai_review.py \
             --repo "${{ github.repository }}" \
@@ -45,6 +57,7 @@ jobs:
             --diff-file pr_truncated.diff > review.md
 
       - name: Comment on PR
+        if: steps.check_key.outputs.missing_key == 'false'
         uses: actions/github-script@v7
         with:
           script: |
@@ -58,8 +71,8 @@ jobs:
             });
 
   note_if_missing:
-    if: ${{ secrets.OPENAI_API_KEY == '' }}
     runs-on: ubuntu-latest
+    if: ${{ ! secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/github-script@v7
         with:
