@@ -48,12 +48,15 @@
       <ul class="activities-list">
         {% for activity in activities %}
           <li class="activity-item">
-            <strong>{{ activity.name }}</strong><br />
+            <a href="{% url 'activity_detail' activity.name %}">
+              <strong>{{ activity.name }}</strong>
+            </a><br />
             <span>{{ activity.description }}</span><br />
             <em>{{ activity.location }}</em><br />
             <small>{{ activity.distance_miles }} miles away</small>
           </li>
         {% endfor %}
+
       </ul>
     {% else %}
       <p>No activities found yet for your location.</p>
