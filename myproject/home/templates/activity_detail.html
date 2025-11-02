@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ activity.name }} | Activity Details</title>
+  <link rel="stylesheet" href="{% static 'styles.css' %}" />
+</head>
+<body>
+  <nav class="navbar">
+    <!-- Copy navbar HTML from your main template for full consistency -->
+  </nav>
+  <main>
+    <div class="welcome-section" style="max-width: 500px;">
+      {% if activity %}
+        {% if activity.image_url %}
+          <img src="{{ activity.image_url }}" alt="Photo of {{ activity.name }}" style="width:100%; border-radius:12px; margin-bottom:1.2em; box-shadow: 0 4px 18px rgba(0,0,0,0.10);" />
+        {% endif %}
+        <h1 style="color: var(--forest-green); font-size: 2em; margin-bottom:0.5em;">{{ activity.name }}</h1>
+        <hr style="margin: 1em 0; border: none; border-top: 1.5px solid var(--olivine);" />
+
+        <div style="text-align:left; margin-bottom:1.6em;">
+          {% if activity.description %}
+            <p><strong style="color:var(--charcoal);">Type:</strong> <span style="color:var(--zomp);">{{ activity.description }}</span></p>
+          {% endif %}
+          <p><strong>Location:</strong> {{ activity.location }}{% if activity.zip_code %}, {{ activity.zip_code }}{% endif %}</p>
+          <p><strong>Distance:</strong> <span>{{ activity.distance_miles }} miles away</span></p>
+          {% if activity.rating %}
+            <p><strong>Rating(Yelp):</strong> <span style="color: var(--pumpkin);">{{ activity.rating }} ★</span> ({{ activity.review_count }} reviews)</p>
+          {% endif %}
+          {% if activity.phone %}
+            <p><strong>Phone:</strong> <a href="tel:{{ activity.phone }}" style="color:var(--forest-green)">{{ activity.phone }}</a></p>
+          {% endif %}
+          {% if activity.price %}
+            <p><strong>Price:</strong> <span>{{ activity.price }}</span></p>
+          {% endif %}
+          <p><strong>Status:</strong> 
+            {% if activity.is_closed %}<span style="color:#d00">Closed</span>{% else %}<span style="color:var(--olivine)">Open</span>{% endif %}
+          </p>
+        </div>
+        <a class="btn-primary" href="{{ activity.yelp_url }}" target="_blank" style="display:inline-block;">View on Yelp</a>
+      {% else %}
+        <div class="feature-card">
+          <h2 style="color:var(--pumpkin);">Activity not found</h2>
+        </div>
+      {% endif %}
+      <a class="btn-secondary" href="{% url 'activities' %}">Back to Activities</a>
+    </div>
+  </main>
+  <footer>
+    <p>Created by Team 5 - 10/6/25</p>
+  </footer>
+</body>
+</html>
