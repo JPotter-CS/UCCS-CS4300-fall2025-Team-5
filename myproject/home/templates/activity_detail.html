@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{ activity.name }} | Activity Details</title>
   <link rel="stylesheet" href="{% static 'styles.css' %}" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
   <nav class="navbar">
@@ -35,10 +38,18 @@
           {% if activity.price %}
             <p><strong>Price:</strong> <span>{{ activity.price }}</span></p>
           {% endif %}
-          <p><strong>Status:</strong> 
-            {% if activity.is_closed %}<span style="color:#d00">Closed</span>{% else %}<span style="color:var(--olivine)">Open</span>{% endif %}
+          <p><strong>Status:</strong>
+            {% if activity.is_closed %}
+              <span style="color:#d00">Closed</span>
+            {% else %}
+              <span style="color:var(--olivine)">Open</span>
+            {% endif %}
           </p>
         </div>
+
+        <!-- Map container -->
+        <div id="map" style="height:320px; width:100%; margin:1.5em 0; border-radius:8px; box-shadow:0 4px 18px rgba(0,0,0,0.08);"></div>
+
         <a class="btn-primary" href="{{ activity.yelp_url }}" target="_blank" style="display:inline-block;">View on Yelp</a>
       {% else %}
         <div class="feature-card">
@@ -51,5 +62,80 @@
   <footer>
     <p>Created by Team 5 - 10/6/25</p>
   </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Parse lat/lon safely from context, fallback 0 if missing
+      const activityLat = parseFloat("{{ activity.lat|default:'0' }}");
+      const activityLon = parseFloat("{{ activity.lon|default:'0' }}");
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            const userLat = position.coords.latitude;
+            const userLon = position.coords.longitude;
+
+            // Center map between user and activity
+            const centerLat = (userLat + activityLat) / 2;
+            const centerLon = (userLon + activityLon) / 2;
+
+            const map = L.map("map").setView([centerLat, centerLon], 13);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+              attribution: "© OpenStreetMap contributors",
+              maxZoom: 19
+            }).addTo(map);
+
+            // Blue marker for user (no popup)
+            L.marker([userLat, userLon], {
+              icon: L.icon({
+                iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                iconSize: [32, 32],
+                iconAnchor: [16, 32]
+              })
+            }).addTo(map);
+
+            // Red marker for activity with popup
+            if (activityLat && activityLon) {
+              L.marker([activityLat, activityLon], {
+                icon: L.icon({
+                  iconUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                  iconSize: [32, 32],
+                  iconAnchor: [16, 32]
+                })
+              }).addTo(map).bindPopup("{{ activity.name|escapejs }}");
+            }
+
+            setTimeout(() => map.invalidateSize(), 300);
+          },
+          function() {
+            // If user geolocation fails, show activity only
+            showActivityOnly();
+          }
+        );
+      } else {
+        showActivityOnly();
+      }
+
+      function showActivityOnly() {
+        if (activityLat && activityLon) {
+          const map = L.map("map").setView([activityLat, activityLon], 14);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "© OpenStreetMap contributors",
+            maxZoom: 19
+          }).addTo(map);
+          L.marker([activityLat, activityLon], {
+            icon: L.icon({
+              iconUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+              iconSize: [32, 32],
+              iconAnchor: [16, 32]
+            })
+          }).addTo(map).bindPopup("{{ activity.name|escapejs }}").openPopup();
+          setTimeout(() => map.invalidateSize(), 300);
+        }
+      }
+    });
+  </script>
 </body>
 </html>

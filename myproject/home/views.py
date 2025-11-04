@@ -6,17 +6,20 @@ import json
 import urllib.parse
 import requests
 
+
 @ensure_csrf_cookie
 def index(request):
-    #Main page with integrated location feature.
+    # Main page with integrated location feature.
     coords = request.session.get("coords")
     return render(request, 'index.html', {"coords": coords})
+
 
 @ensure_csrf_cookie
 def location_page(request):
     """Display the location page with saved coordinates."""
     coords = request.session.get('coords', None)
     return render(request, 'location.html', {'coords': coords})
+
 
 def reverse_geocode(lat, lon):
     try:
@@ -55,8 +58,10 @@ def save_location(request):
     request.session["coords"] = {"lat": lat, "lon": lon, "city": city, "state": state}
     return JsonResponse({"ok": True, "coords": request.session["coords"]})
 
+
 def meters_to_miles(meters):
     return round(meters * 0.000621371, 2)
+
 
 def activities_page(request):
     coords = request.session.get("coords")
@@ -76,7 +81,6 @@ def activities_page(request):
             "radius": 25000  # meters
         }
 
-
         response = requests.get(url, headers=headers, params=params, timeout=5)
         if response.status_code == 200:
             data = response.json()
@@ -88,7 +92,9 @@ def activities_page(request):
                     "name": b.get("name", "Unnamed"),
                     "description": ", ".join([cat['title'] for cat in b.get("categories", [])]),
                     "location": ", ".join(filter(None, [b.get("location", {}).get("address1"), b.get("location", {}).get("city")])),
-                    "distance_miles": distance_miles
+                    "distance_miles": distance_miles,
+                    "lat": b.get("coordinates", {}).get("latitude", 0),
+                    "lon": b.get("coordinates", {}).get("longitude", 0),
                 })
             if not activities:
                 print("No activities parsed from API response")
@@ -99,6 +105,7 @@ def activities_page(request):
         print("No location coordinates in session")
 
     return render(request, "activities.html", {"coords": coords, "activities": activities})
+
 
 # New view for activity detail page
 # It extracts the activity name from the URL and displays details.
@@ -117,8 +124,8 @@ def activity_detail(request, name):
         url = "https://api.yelp.com/v3/businesses/search"
         headers = {"Authorization": f"Bearer {api_key}"}
         params = {
-            "latitude": coords["lat"], # Using latitude from session
-            "longitude": coords["lon"], # Using longitude from session
+            "latitude": coords["lat"],  # Using latitude from session
+            "longitude": coords["lon"],  # Using longitude from session
             "categories": "parks,golf,hiking,biking,playgrounds,swimmingpools,soccer,baseball,basketball,tennis,volleyball,sportsgrounds",
             "limit": 10,
             "radius": 25000  # meters
@@ -145,6 +152,8 @@ def activity_detail(request, name):
                     "zip_code": b.get("location", {}).get("zip_code"),
                     "price": b.get("price"),
                     "is_closed": b.get("is_closed"),
+                    "lat": b.get("coordinates", {}).get("latitude", 0),
+                    "lon": b.get("coordinates", {}).get("longitude", 0)
                 })
 
             for act in activities:  # debug all cleaned names
@@ -158,6 +167,3 @@ def activity_detail(request, name):
         return render(request, "activity_detail.html", {"activity": selected})
     else:
         return render(request, "activity_detail.html", {"activity": None})
-
-
-

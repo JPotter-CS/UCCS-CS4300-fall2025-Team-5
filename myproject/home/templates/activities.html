@@ -10,10 +10,7 @@
   <link rel="stylesheet" href="{% static 'styles.css' %}" />
 
   <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 
 <body>
@@ -56,7 +53,6 @@
             <small>{{ activity.distance_miles }} miles away</small>
           </li>
         {% endfor %}
-
       </ul>
     {% else %}
       <p>No activities found yet for your location.</p>
@@ -65,7 +61,7 @@
 
   <!-- Map container -->
   <div id="map-container">
-    <div id="map"></div>
+    <div id="map" style="height: 420px; width: 100%;"></div>
   </div>
 
   <footer>
@@ -96,17 +92,14 @@
         maxZoom: 19
       }).addTo(map);
 
-      // Add user's blue marker
+      // Add user's blue marker WITHOUT popup
       L.marker([lat, lon], {
         icon: L.icon({
           iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
           iconSize: [32, 32],
           iconAnchor: [16, 32]
         })
-      })
-        .addTo(map)
-        .bindPopup("You are here")
-        .openPopup();
+      }).addTo(map);
 
       // Activity markers
       const activities = [
