@@ -34,6 +34,5 @@ resp = client.responses.create(
     model="gpt-5",
     instructions=instructions,
     input=[{"role":"user","content": f"Git diff:\n\n{diff}"}],
-    temperature=0.2,
 )
 print(resp.output_text)
