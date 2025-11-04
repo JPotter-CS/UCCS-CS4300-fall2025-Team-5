@@ -100,7 +100,6 @@ def activities_page(request):
 
     return render(request, "activities.html", {"coords": coords, "activities": activities})
 
-# New view for activity detail page
 # It extracts the activity name from the URL and displays details.
 def activity_detail(request, name):
     print(f"URL param: {name}")  # debug
@@ -136,7 +135,6 @@ def activity_detail(request, name):
                     "description": ", ".join([cat['title'] for cat in b.get("categories", [])]),
                     "location": ", ".join(filter(None, [b.get("location", {}).get("address1"), b.get("location", {}).get("city")])),
                     "distance_miles": distance_miles,
-                    # EXTRA FIELDS:
                     "phone": b.get("display_phone"),
                     "rating": b.get("rating"),
                     "review_count": b.get("review_count"),
