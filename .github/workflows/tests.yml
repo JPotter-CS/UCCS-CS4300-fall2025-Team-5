@@ -1,21 +1,31 @@
 name: Tests
 on: [push, pull_request]
+
 permissions:
   contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt || true
           pip install -r requirements_test.txt || true
           pip install pytest pytest-cov
+
+      - name: Apply migrations
+        run: |
+          python myproject/manage.py migrate --noinput
+
       - name: Run tests with coverage
         run: |
           pytest -q --cov=. --cov-report=term-missing --maxfail=1 --disable-warnings
