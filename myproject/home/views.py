@@ -88,7 +88,7 @@ def activities_page(request):
                     "name": b.get("name", "Unnamed"),
                     "description": ", ".join([cat['title'] for cat in b.get("categories", [])]),
                     "location": ", ".join(filter(None, [b.get("location", {}).get("address1"), b.get("location", {}).get("city")])),
-                    "distance_miles": distance_miles
+                    "distance_miles": distance_miles,
                     "lat": b.get("coordinates", {}).get("latitude", 0),
                     "lon": b.get("coordinates", {}).get("longitude", 0),
                 })
