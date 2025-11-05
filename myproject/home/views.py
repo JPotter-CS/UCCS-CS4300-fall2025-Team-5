@@ -89,6 +89,8 @@ def activities_page(request):
                     "description": ", ".join([cat['title'] for cat in b.get("categories", [])]),
                     "location": ", ".join(filter(None, [b.get("location", {}).get("address1"), b.get("location", {}).get("city")])),
                     "distance_miles": distance_miles
+                    "lat": b.get("coordinates", {}).get("latitude", 0),
+                    "lon": b.get("coordinates", {}).get("longitude", 0),
                 })
             if not activities:
                 print("No activities parsed from API response")
@@ -143,6 +145,8 @@ def activity_detail(request, name):
                     "zip_code": b.get("location", {}).get("zip_code"),
                     "price": b.get("price"),
                     "is_closed": b.get("is_closed"),
+                    "lat": b.get("coordinates", {}).get("latitude", 0),
+                    "lon": b.get("coordinates", {}).get("longitude", 0)
                 })
 
             for act in activities:  # debug all cleaned names
