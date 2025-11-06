@@ -61,6 +61,24 @@
     {% else %}
       <p>No activities found yet for your location.</p>
     {% endif %}
+
+    <section class="weather-section">
+      <div class="weather-container">
+        <div class="current-weather">
+          <h3>Current Weather</h3>
+          <div id="current-weather-content">
+            <p class="loading">Loading weather...</p>
+          </div>
+        </div>
+
+        <div class="forecast-weather">
+          <h3>4-Day Forecast</h3>
+          <div id="forecast-content" class="forecast-grid">
+            <p class="loading">Loading forecast...</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- Map container -->
@@ -76,9 +94,18 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <script>
+    let userLat, userLon;
     document.addEventListener("DOMContentLoaded", () => {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showMap, showError);
+        navigator.geolocation.getCurrentPosition(
+                (position) => {
+                  userLat = position.coords.latitude;
+                  userLon = position.coords.longitude;
+                  showMap(position);
+                  fetchWeather(userLat, userLon);
+                },
+                showError
+        );
       } else {
         console.log("Geolocation not supported by this browser.");
       }
@@ -138,6 +165,96 @@
 
     function showError(error) {
       console.warn("Geolocation error:", error.message);
+    }
+
+    async function fetchWeather(lat, lon) {
+      if (!lat || !lon || lat === 0 || lon === 0) {
+        console.log('Invalid coordinates, skipping weather fetch');
+        return;
+      }
+      try {
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`;
+
+        const response = await fetch(weatherUrl);
+        const data = await response.json();
+
+        displayCurrentWeather(data.current);
+        displayForecast(data.daily);
+      } catch (error) {
+        console.error("Error fetching weather:", error);
+        document.getElementById("current-weather-content").innerHTML =
+                '<p class="loading">Unable to load weather data</p>';
+        document.getElementById("forecast-content").innerHTML =
+                '<p class="loading">Unable to load forecast</p>';
+      }
+    }
+
+    function getWeatherIcon(code) {
+      const icons = {
+        0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+        45: '🌫️', 48: '🌫️',
+        51: '🌦️', 53: '🌦️', 55: '🌦️',
+        61: '🌧️', 63: '🌧️', 65: '🌧️',
+        71: '🌨️', 73: '🌨️', 75: '🌨️',
+        77: '❄️', 80: '🌦️', 81: '🌧️', 82: '⛈️',
+        85: '🌨️', 86: '🌨️',
+        95: '⛈️', 96: '⛈️', 99: '⛈️'
+      };
+      return icons[code] || '🌤️';
+    }
+
+    function getWeatherDescription(code) {
+      const descriptions = {
+        0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+        45: 'Foggy', 48: 'Foggy',
+        51: 'Light drizzle', 53: 'Moderate drizzle', 55: 'Dense drizzle',
+        61: 'Slight rain', 63: 'Moderate rain', 65: 'Heavy rain',
+        71: 'Slight snow', 73: 'Moderate snow', 75: 'Heavy snow',
+        77: 'Snow grains', 80: 'Rain showers', 81: 'Rain showers', 82: 'Heavy rain showers',
+        85: 'Snow showers', 86: 'Heavy snow showers',
+        95: 'Thunderstorm', 96: 'Thunderstorm with hail', 99: 'Severe thunderstorm'
+      };
+      return descriptions[code] || 'Unknown';
+    }
+
+    function displayCurrentWeather(current) {
+      const html = `
+    <div class="weather-icon">${getWeatherIcon(current.weather_code)}</div>
+    <div class="weather-details">
+      <div class="weather-temp">${Math.round(current.temperature_2m)}°F</div>
+      <div class="weather-description">${getWeatherDescription(current.weather_code)}</div>
+      <div class="weather-extra">
+        <span>Feels like: ${Math.round(current.apparent_temperature)}°F</span>
+        <span>Humidity: ${current.relative_humidity_2m}%</span>
+        <span>Wind: ${Math.round(current.wind_speed_10m)} mph</span>
+      </div>
+    </div>
+  `;
+      document.getElementById("current-weather-content").innerHTML = html;
+    }
+
+    function displayForecast(daily) {
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      let html = '';
+
+      for (let i = 2; i <= 5; i++) {
+        const date = new Date(daily.time[i]);
+        const dayName = days[date.getDay()];
+        const monthDay = `${date.getMonth() + 1}/${date.getDate()}`;
+
+        html += `
+      <div class="forecast-day">
+        <div class="forecast-date">${dayName}<br><small>${monthDay}</small></div>
+        <div class="forecast-icon">${getWeatherIcon(daily.weather_code[i])}</div>
+        <div class="forecast-temp">
+          <strong>${Math.round(daily.temperature_2m_max[i])}°</strong> / ${Math.round(daily.temperature_2m_min[i])}°
+        </div>
+        <div class="forecast-desc">${getWeatherDescription(daily.weather_code[i])}</div>
+      </div>
+    `;
+      }
+
+      document.getElementById("forecast-content").innerHTML = html;
     }
   </script>
 </body>
