@@ -5,17 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Nearby Recreational Activities</title>
-
-  <!-- Local stylesheet -->
   <link rel="stylesheet" href="{% static 'styles.css' %}" />
-
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
-
 <body>
   <!-- Top navigation bar -->
   <nav class="navbar">
@@ -23,13 +15,11 @@
       <a href="{% url 'index' %}" class="site-logo-link">
         <img src="{% static 'recreo.jpg' %}" alt="Recreo Logo" class="nav-logo" />
       </a>
-
       <ul class="nav-menu">
         <li><a href="{% url 'index' %}">Home</a></li>
         <li><a href="#">Activities</a></li>
         <li><a href="#">Contact</a></li>
       </ul>
-
       <div class="navbar-extra">Your adventure awaits</div>
     </div>
   </nav>
@@ -56,7 +46,6 @@
             <small>{{ activity.distance_miles }} miles away</small>
           </li>
         {% endfor %}
-
       </ul>
     {% else %}
       <p>No activities found yet for your location.</p>
@@ -70,7 +59,6 @@
             <p class="loading">Loading weather...</p>
           </div>
         </div>
-
         <div class="forecast-weather">
           <h3>4-Day Forecast</h3>
           <div id="forecast-content" class="forecast-grid">
@@ -94,46 +82,48 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <script>
-    let userLat, userLon;
+    // Use backend-coordinates if available
+    var backendLat = {{ coords.lat|default:"null" }};
+    var backendLon = {{ coords.lon|default:"null" }};
+
+    // On page load, use backend coords if they exist, else fallback to device geolocation
     document.addEventListener("DOMContentLoaded", () => {
-      if (navigator.geolocation) {
+      if (backendLat !== null && backendLon !== null) {
+        showMapCustom(backendLat, backendLon);
+        fetchWeather(backendLat, backendLon);
+      } else if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-                (position) => {
-                  userLat = position.coords.latitude;
-                  userLon = position.coords.longitude;
-                  showMap(position);
-                  fetchWeather(userLat, userLon);
-                },
-                showError
+          (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            showMapCustom(lat, lon);
+            fetchWeather(lat, lon);
+          },
+          showError
         );
       } else {
         console.log("Geolocation not supported by this browser.");
       }
     });
 
-    function showMap(position) {
-      const lat = position.coords.latitude;
-      const lon = position.coords.longitude;
-
+    function showMapCustom(lat, lon) {
       const map = L.map("map").setView([lat, lon], 13);
 
-      // Add OpenStreetMap tiles
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors",
         maxZoom: 19
       }).addTo(map);
 
-      // Add user's blue marker
+      // User location (blue dot)
       L.marker([lat, lon], {
         icon: L.icon({
           iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
           iconSize: [32, 32],
           iconAnchor: [16, 32]
         })
-      }).addTo(map)
- 
+      }).addTo(map);
 
-      // Activity markers
+      // Activity markers with popups
       const activities = [
         {% for activity in activities %}
           {
@@ -154,12 +144,11 @@
               iconAnchor: [16, 32]
             })
           })
-            .addTo(map)
-            .bindPopup(`<b>${act.name}</b><br>${act.description}`);
+          .addTo(map)
+          .bindPopup(`<b>${act.name}</b>`); // popup shows on click
         }
       });
 
-      // Fix for hidden map rendering
       setTimeout(() => map.invalidateSize(), 300);
     }
 
@@ -183,9 +172,9 @@
       } catch (error) {
         console.error("Error fetching weather:", error);
         document.getElementById("current-weather-content").innerHTML =
-                '<p class="loading">Unable to load weather data</p>';
+          '<p class="loading">Unable to load weather data</p>';
         document.getElementById("forecast-content").innerHTML =
-                '<p class="loading">Unable to load forecast</p>';
+          '<p class="loading">Unable to load forecast</p>';
       }
     }
 
@@ -219,17 +208,17 @@
 
     function displayCurrentWeather(current) {
       const html = `
-    <div class="weather-icon">${getWeatherIcon(current.weather_code)}</div>
-    <div class="weather-details">
-      <div class="weather-temp">${Math.round(current.temperature_2m)}°F</div>
-      <div class="weather-description">${getWeatherDescription(current.weather_code)}</div>
-      <div class="weather-extra">
-        <span>Feels like: ${Math.round(current.apparent_temperature)}°F</span>
-        <span>Humidity: ${current.relative_humidity_2m}%</span>
-        <span>Wind: ${Math.round(current.wind_speed_10m)} mph</span>
-      </div>
-    </div>
-  `;
+        <div class="weather-icon">${getWeatherIcon(current.weather_code)}</div>
+        <div class="weather-details">
+          <div class="weather-temp">${Math.round(current.temperature_2m)}°F</div>
+          <div class="weather-description">${getWeatherDescription(current.weather_code)}</div>
+          <div class="weather-extra">
+            <span>Feels like: ${Math.round(current.apparent_temperature)}°F</span>
+            <span>Humidity: ${current.relative_humidity_2m}%</span>
+            <span>Wind: ${Math.round(current.wind_speed_10m)} mph</span>
+          </div>
+        </div>
+      `;
       document.getElementById("current-weather-content").innerHTML = html;
     }
 
@@ -243,15 +232,15 @@
         const monthDay = `${date.getMonth() + 1}/${date.getDate()}`;
 
         html += `
-      <div class="forecast-day">
-        <div class="forecast-date">${dayName}<br><small>${monthDay}</small></div>
-        <div class="forecast-icon">${getWeatherIcon(daily.weather_code[i])}</div>
-        <div class="forecast-temp">
-          <strong>${Math.round(daily.temperature_2m_max[i])}°</strong> / ${Math.round(daily.temperature_2m_min[i])}°
-        </div>
-        <div class="forecast-desc">${getWeatherDescription(daily.weather_code[i])}</div>
-      </div>
-    `;
+          <div class="forecast-day">
+            <div class="forecast-date">${dayName}<br><small>${monthDay}</small></div>
+            <div class="forecast-icon">${getWeatherIcon(daily.weather_code[i])}</div>
+            <div class="forecast-temp">
+              <strong>${Math.round(daily.temperature_2m_max[i])}°</strong> / ${Math.round(daily.temperature_2m_min[i])}°
+            </div>
+            <div class="forecast-desc">${getWeatherDescription(daily.weather_code[i])}</div>
+          </div>
+        `;
       }
 
       document.getElementById("forecast-content").innerHTML = html;
