@@ -6,12 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{ activity.name }} | Activity Details</title>
   <link rel="stylesheet" href="{% static 'styles.css' %}" />
-<<<<<<< HEAD
-=======
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
->>>>>>> e4e70c79feed623258c6dfb3826bbcca063ea2fe
 </head>
 <body>
   <nav class="navbar">
@@ -45,14 +42,11 @@
             {% if activity.is_closed %}<span style="color:#d00">Closed</span>{% else %}<span style="color:var(--olivine)">Open</span>{% endif %}
           </p>
         </div>
-<<<<<<< HEAD
-=======
 
         <!-- Map container -->
         <div id="map" style="height:320px; width:100%; margin:1.5em 0; border-radius:8px; box-shadow:0 4px 18px rgba(0,0,0,0.08);"></div>
 
 
->>>>>>> e4e70c79feed623258c6dfb3826bbcca063ea2fe
         <a class="btn-primary" href="{{ activity.yelp_url }}" target="_blank" style="display:inline-block;">View on Yelp</a>
       {% else %}
         <div class="feature-card">
@@ -65,8 +59,6 @@
   <footer>
     <p>Created by Team 5 - 10/6/25</p>
   </footer>
-<<<<<<< HEAD
-=======
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -142,6 +134,5 @@
       }
     });
   </script>
->>>>>>> e4e70c79feed623258c6dfb3826bbcca063ea2fe
 </body>
 </html>
