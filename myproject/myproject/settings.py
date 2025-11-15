@@ -31,7 +31,9 @@ ALLOWED_HOSTS = [
     '.devedu.io',
     '.onrender.com',
     '127.0.0.1', 
-    'localhost'
+    'localhost',
+    'recreo.world',
+    'www.recreo.world'
 ]
 
 RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
