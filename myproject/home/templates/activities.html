@@ -7,6 +7,7 @@
   <title>Nearby Recreational Activities</title>
   <link rel="stylesheet" href="{% static 'styles.css' %}" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <!-- Top navigation bar -->
@@ -33,6 +34,46 @@
         <h2>Activities Near Your Location</h2>
       {% endif %}
     </section>
+
+    <div class="filter-center-wrapper">
+      <section class="filter-section">
+          <form method="get" action="{% url 'activities' %}" class="filter-form" style="margin-bottom:2em;">
+          <label for="type"><strong>Type:</strong></label>
+          <select name="type" id="type">
+            <option value="">All</option>
+            <option value="parks" {% if selected_type == "parks" %}selected{% endif %}>Parks</option>
+            <option value="golf" {% if selected_type == "golf" %}selected{% endif %}>Golf</option>
+            <option value="hiking" {% if selected_type == "hiking" %}selected{% endif %}>Hiking</option>
+            <option value="biking" {% if selected_type == "biking" %}selected{% endif %}>Biking</option>
+            <option value="playgrounds" {% if selected_type == "playgrounds" %}selected{% endif %}>Playgrounds</option>
+            <option value="swimmingpools" {% if selected_type == "swimmingpools" %}selected{% endif %}>Swimming Pools</option>
+            <option value="soccer" {% if selected_type == "soccer" %}selected{% endif %}>Soccer</option>
+            <option value="baseball" {% if selected_type == "baseball" %}selected{% endif %}>Baseball</option>
+            <option value="basketball" {% if selected_type == "basketball" %}selected{% endif %}>Basketball</option>
+          </select>
+
+          <label for="max_distance"><strong>Max Distance (miles):</strong></label>
+          <input type="number" name="max_distance" id="max_distance" value="{{ max_distance|default:'' }}" min="1" max="50" step="1" />
+
+          <label for="min_rating"><strong>Min Rating:</strong></label>
+          <select name="min_rating" id="min_rating">
+            <option value="">Any</option>
+            <option value="3" {% if min_rating == "3" %}selected{% endif %}>3+ stars</option>
+            <option value="4" {% if min_rating == "4" %}selected{% endif %}>4+ stars</option>
+            <option value="5" {% if min_rating == "5" %}selected{% endif %}>5 stars</option>
+          </select>
+
+          <label for="open_now" style="display: flex; align-items: center; font-weight: 600;">
+            <input type="checkbox" name="open_now" id="open_now" {% if open_now %}checked{% endif %} style="margin-right:0.5em;" />
+            <span>Open Now</span>
+            <i class="fas fa-clock" style="color:#28a745; margin-left:0.4em;"></i>
+          </label>
+
+          <button type="submit" class="btn-primary">Filter</button>
+        </form>
+      </section>
+    </div>
+
 
     {% if activities %}
       <ul class="activities-list">
