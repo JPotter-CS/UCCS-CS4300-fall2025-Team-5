@@ -29,3 +29,8 @@ jobs:
       - name: Run tests with coverage
         run: |
           pytest -q --cov=. --cov-report=term-missing --maxfail=1 --disable-warnings
+
+      - name: Run Pylint
+        run: |
+          cd myproject
+          pylint home/ myproject/ --exit-zero
