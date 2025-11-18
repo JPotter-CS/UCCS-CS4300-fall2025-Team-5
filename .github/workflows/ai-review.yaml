@@ -29,8 +29,16 @@ jobs:
 
       - name: Build PR diff
         run: |
-          git fetch origin ${{ github.base_ref }} --depth=1
-          git diff --unified=0 --no-color origin/${{ github.base_ref }}...HEAD > pr.diff
+          # Fetch both base and head commits explicitly
+          git fetch origin ${{ github.event.pull_request.base.sha }}
+          git fetch origin ${{ github.event.pull_request.head.sha }}
+
+          # Diff directly between base and head SHAs
+          git diff --unified=0 --no-color \
+            ${{ github.event.pull_request.base.sha }} \
+            ${{ github.event.pull_request.head.sha }} > pr.diff
+
+          # Truncate to 120k chars for API safety
           head -c 120000 pr.diff > pr_truncated.diff
 
       - name: Run AI review
