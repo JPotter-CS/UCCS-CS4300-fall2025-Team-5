@@ -30,9 +30,15 @@
       <p class="hero-subtitle">Get outdoors and discover new experiences</p>
       <div class="hero-buttons">
         <button id="share-location-button" class="btn-primary">Share Location</button>
-        <a href="#activities" class="activity-btn">See Activities</a>
+        <a href="{% url 'activities' %}" class="activity-btn">See Activities</a>
+        <button id="input-location-toggle" class="btn-primary">Input Location</button>
       </div>
-
+      <form id="manual-location-form" method="post" action="{% url 'save_text_location' %}" style="display:none; margin-top: 1em;">
+        {% csrf_token %}
+        <input type="text" name="city" id="input-city" placeholder="City (e.g., Denver)" required style="margin-right:0.5em;" />
+        <input type="text" name="state" id="input-state" placeholder="State (e.g., CO)" required maxlength="2" style="margin-right:0.5em;" />
+        <button type="submit" class="btn-primary">Save Location</button>
+      </form>
     </div>
   </header>
 
@@ -45,40 +51,21 @@
       </p>
       <div class="feature-icons">
         <div>
-          <img src="{% static 'icon_trail.svg' %}" alt="Trail icon">
+          <img src="{% static 'icon_trail.svg' %}" alt="Trail icon" />
           <p>Find Trails</p>
         </div>
         <div>
-          <img src="{% static 'icon_friends.svg' %}" alt="Friends icon">
+          <img src="{% static 'icon_friends.svg' %}" alt="Friends icon" />
           <p>Play with Friends</p>
         </div>
         <div>
-          <img src="{% static 'icon_events.svg' %}" alt="Events icon">
+          <img src="{% static 'icon_events.svg' %}" alt="Events icon" />
           <p>Discover Events</p>
         </div>
         <div>
-          <img src="{% static 'icon_location.svg' %}" alt="Location icon">
+          <img src="{% static 'icon_location.svg' %}" alt="Location icon" />
           <p>Nearby Activities</p>
         </div>
-      </div>
-    </section>
-
-    <!-- Feature / Info cards, inspired by your highlights section -->
-    <section class="card-section">
-      <div class="feature-card">
-        <img src="{% static 'beachvolley.jpg' %}" alt="Beach Volleyball">
-        <h3>Social Sports</h3>
-        <p>Find Activities like volleyball, basketball, and more.</p>
-      </div>
-      <div class="feature-card">
-        <img src="{% static 'golfcourse.jpg' %}" alt="Golf Course">
-        <h3>Scenic Spots</h3>
-        <p>Explore the best local parks and courses for outdoor fun and fitness.</p>
-      </div>
-      <div class="feature-card">
-        <img src="{% static 'basketball.jpg' %}" alt="Basketball">
-        <h3>Community Events</h3>
-        <p>Find and attend events to meet new people and try new activities.</p>
       </div>
     </section>
 
@@ -97,6 +84,14 @@
           <a href="{% url 'activities' %}" class="activity-btn">See Nearby Activities</a>
         </div>
       {% else %}
+        <form method="post" action="{% url 'save_text_location' %}" class="location-input-form">
+          {% csrf_token %}
+          <label for="city">City:</label>
+          <input type="text" id="city" name="city" placeholder="e.g., Colorado Springs" required />
+          <label for="state">State:</label>
+          <input type="text" id="state" name="state" placeholder="e.g., CO" required maxlength="2" />
+          <button type="submit" class="btn-secondary">Save Location</button>
+        </form>
         <p class="no-location">No location saved yet.</p>
       {% endif %}
     </section>
@@ -121,7 +116,22 @@
 
     try {
       const pos = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject);
+        navigator.geolocation.getCurrentPosition(resolve, (error) => {
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              alert("Location access denied. Please allow location access to share your location.");
+              break;
+            case error.POSITION_UNAVAILABLE:
+              alert("Location information is unavailable.");
+              break;
+            case error.TIMEOUT:
+              alert("Location request timed out.");
+              break;
+            default:
+              alert("An unknown geolocation error occurred.");
+          }
+          reject(error);
+        });
       });
 
       const res = await fetch("{% url 'save_location' %}", {
@@ -144,14 +154,19 @@
         alert("Failed to save location.");
       }
     } catch (error) {
-      alert("Location access denied or error occurred.");
+      console.error("Geolocation error:", error);
     }
   }
 
-  document.getElementById('share-location-button').addEventListener('click', () => {
-    detectAndShareLocation();
+  document.getElementById('share-location-button').addEventListener('click', detectAndShareLocation);
+
+  document.getElementById("input-location-toggle").addEventListener("click", function() {
+    const form = document.getElementById("manual-location-form");
+    form.style.display = (form.style.display === "none" || !form.style.display) ? "block" : "none";
+    if (form.style.display === "block") {
+      document.getElementById("input-city").focus();
+    }
   });
 </script>
-
 </body>
 </html>

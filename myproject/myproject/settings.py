@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+load_dotenv()  # This loads variables from .env into environment
+
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-key-placeholder")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
