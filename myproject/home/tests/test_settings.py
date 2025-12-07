@@ -2,10 +2,12 @@
 Tests settings validation, environment configuration, and security settings.
 """
 
+import os
 import time
 
 import pytest
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.test import override_settings
 
 
@@ -265,7 +267,8 @@ class TestSettingsValidation:
     @override_settings(SECRET_KEY="")
     def test_empty_secret_key_handling(self):
         """Test handling of empty SECRET_KEY."""
-        assert settings.SECRET_KEY == ""
+        with pytest.raises(ImproperlyConfigured):
+            _ = settings.SECRET_KEY
 
     def test_settings_types(self):
         """Test that settings have correct types."""
@@ -348,7 +351,7 @@ class TestSettingsPerformance:
         """Test settings import performance."""
         start_time = time.time()
         for _ in range(100):
-            from django.conf import settings as test_settings  # noqa: WPS433
+            from django.conf import settings as test_settings  # noqa: E402
 
             _ = test_settings.DEBUG
         end_time = time.time()
