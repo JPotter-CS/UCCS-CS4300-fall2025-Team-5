@@ -2,12 +2,15 @@
 Tests settings validation, environment configuration, and security settings.
 """
 
-import os
 import time
 
 import pytest
+from django.apps import apps
 from django.conf import settings
+from django.contrib.staticfiles.finders import get_finders
 from django.core.exceptions import ImproperlyConfigured
+from django.db import connection
+from django.template import engines
 from django.test import override_settings
 
 
@@ -208,8 +211,6 @@ class TestSettingsIntegration:
 
     def test_settings_with_django_setup(self):
         """Test that settings work correctly with Django setup."""
-        from django.apps import apps
-
         assert apps.ready
 
         app_configs = apps.get_app_configs()
@@ -220,8 +221,6 @@ class TestSettingsIntegration:
 
     def test_database_connection_with_settings(self):
         """Test that database connection works with current settings."""
-        from django.db import connection
-
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
             result = cursor.fetchone()
@@ -229,15 +228,11 @@ class TestSettingsIntegration:
 
     def test_static_files_with_settings(self):
         """Test static files configuration integration."""
-        from django.contrib.staticfiles.finders import get_finders
-
         finders = list(get_finders())
         assert len(finders) > 0
 
     def test_template_engine_with_settings(self):
         """Test template engine configuration."""
-        from django.template import engines
-
         assert len(engines.all()) > 0
 
         default_engine = engines["django"]
