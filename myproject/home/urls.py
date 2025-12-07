@@ -9,7 +9,7 @@ from . import views
 urlpatterns = [
     path('', index, name='index'),
     path('api/location/', save_location, name='save_location'),
-    path('save_text_location/', save_text_location, name='save_text_location'), 
+    path('save_text_location/', save_text_location, name='save_text_location'),
     path('activities/', activities_page, name='activities'),
     path('activity/<str:name>/', views.activity_detail, name='activity_detail'),
     path('location/', location_page, name='location_page'),
