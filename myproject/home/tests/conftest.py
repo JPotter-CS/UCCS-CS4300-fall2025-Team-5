@@ -117,8 +117,9 @@ def client_with_session():
 
 
 @pytest.fixture(autouse=True)
-def enable_db_access_for_all_tests(_db):
+def enable_db_access_for_all_tests(db):
     """Enable database access for all tests by default."""
+    # Just requesting the 'db' fixture is enough.
     yield
 
 
