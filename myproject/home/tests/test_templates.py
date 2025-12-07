@@ -7,9 +7,8 @@ import time
 
 import pytest
 from bs4 import BeautifulSoup
-from django.template import Context, Template
 from django.template.loader import render_to_string
-from django.test import RequestFactory
+
 
 
 @pytest.mark.unit
