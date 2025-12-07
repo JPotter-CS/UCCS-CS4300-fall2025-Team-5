@@ -4,6 +4,7 @@ Tests end-to-end functionality, cross-component interactions, and user workflows
 
 import gc
 import json
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.test import Client
@@ -173,9 +174,9 @@ class TestSecurityIntegration:
 class TestPerformanceIntegration:
     """Test performance characteristics of integrated workflows."""
 
-    def test_concurrent_session_handling(self, _client):
+    def test_concurrent_session_handling(self, client):
         """Test handling of multiple concurrent sessions."""
-        clients = [Client() for _ in range(5)]
+        clients = [client] + [Client() for _ in range(4)]
 
         for i, test_client in enumerate(clients):
             location = {"lat": 40.0 + i, "lon": -74.0 + i}
