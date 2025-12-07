@@ -2,13 +2,11 @@
 Tests end-to-end functionality, cross-component interactions, and user workflows.
 """
 
+import gc
 import json
-import time
-
 import pytest
 from django.contrib.auth import get_user_model
 from django.test import Client
-from django.conf import settings
 
 
 User = get_user_model()
@@ -175,7 +173,7 @@ class TestSecurityIntegration:
 class TestPerformanceIntegration:
     """Test performance characteristics of integrated workflows."""
 
-    def test_concurrent_session_handling(self, client):
+    def test_concurrent_session_handling(self, _client):
         """Test handling of multiple concurrent sessions."""
         clients = [Client() for _ in range(5)]
 
@@ -305,8 +303,6 @@ class TestLongRunningIntegration:
 
     def test_memory_usage_stability(self, client):
         """Test that memory usage remains stable over many requests."""
-        import gc
-
         gc.collect()
 
         for _ in range(500):
