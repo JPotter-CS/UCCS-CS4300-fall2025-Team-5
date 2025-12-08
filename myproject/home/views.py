@@ -205,8 +205,9 @@ def activities_page(request):
     )
 
 
+from ai_client.clients import generate_activity_description
+
 def activity_detail(request, name):
-    """Show detail for a single activity fetched from Yelp."""
     print(f"URL param: {name}")
 
     name_decoded = urllib.parse.unquote(name).strip().lower()
@@ -236,34 +237,35 @@ def activity_detail(request, name):
             businesses = data.get("businesses", [])
             for business in businesses:
                 distance_miles = meters_to_miles(business.get("distance", 0))
-                activities.append(
-                    {
-                        "name": business.get("name", "Unnamed"),
-                        "description": ", ".join(
-                            [cat["title"] for cat in business.get("categories", [])]
-                        ),
-                        "location": ", ".join(
-                            filter(
-                                None,
-                                [
-                                    business.get("location", {}).get("address1"),
-                                    business.get("location", {}).get("city"),
-                                ],
-                            )
-                        ),
-                        "distance_miles": distance_miles,
-                        "phone": business.get("display_phone"),
-                        "rating": business.get("rating"),
-                        "review_count": business.get("review_count"),
-                        "image_url": business.get("image_url"),
-                        "yelp_url": business.get("url"),
-                        "zip_code": business.get("location", {}).get("zip_code"),
-                        "price": business.get("price"),
-                        "is_closed": business.get("is_closed"),
-                        "lat": business.get("coordinates", {}).get("latitude", 0),
-                        "lon": business.get("coordinates", {}).get("longitude", 0),
-                    }
-                )
+                activity = {
+                    "name": business.get("name", "Unnamed"),
+                    "description": ", ".join(
+                        [cat["title"] for cat in business.get("categories", [])]
+                    ),
+                    "location": ", ".join(
+                        filter(
+                            None,
+                            [
+                                business.get("location", {}).get("address1"),
+                                business.get("location", {}).get("city"),
+                            ],
+                        )
+                    ),
+                    "distance_miles": distance_miles,
+                    "phone": business.get("display_phone"),
+                    "rating": business.get("rating"),
+                    "review_count": business.get("review_count"),
+                    "image_url": business.get("image_url"),
+                    "yelp_url": business.get("url"),
+                    "zip_code": business.get("location", {}).get("zip_code"),
+                    "price": business.get("price"),
+                    "is_closed": business.get("is_closed"),
+                    "lat": business.get("coordinates", {}).get("latitude", 0),
+                    "lon": business.get("coordinates", {}).get("longitude", 0),
+                }
+                # AI-generated description
+                activity["ai_description"] = generate_activity_description(activity["name"])
+                activities.append(activity)
             selected = next(
                 (
                     act
@@ -276,3 +278,4 @@ def activity_detail(request, name):
             print(f"Yelp API error: {response.status_code} - {response.text}")
 
     return render(request, "activity_detail.html", {"activity": selected})
+

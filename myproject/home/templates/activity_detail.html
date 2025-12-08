@@ -39,6 +39,11 @@
           <p><strong>Status:</strong> 
             {% if activity.is_closed %}<span style="color:#d00">Closed</span>{% else %}<span style="color:var(--olivine)">Open</span>{% endif %}
           </p>
+          
+          <!-- AI-generated description -->
+          {% if activity.ai_description %}
+            <p><strong>AI Description:</strong> {{ activity.ai_description }}</p>
+          {% endif %}
         </div>
 
         <!-- Map container -->
@@ -57,83 +62,83 @@
     <p>Created by Team 5 - 10/6/25</p>
   </footer>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script>
-  // Backend/session location coordinates
-  var backendLat = {{ coords.lat|default:"null" }};
-  var backendLon = {{ coords.lon|default:"null" }};
-  var activityLat = parseFloat("{{ activity.lat|default:'0' }}");
-  var activityLon = parseFloat("{{ activity.lon|default:'0' }}");
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Backend/session location coordinates
+    var backendLat = {{ coords.lat|default:"null" }};
+    var backendLon = {{ coords.lon|default:"null" }};
+    var activityLat = parseFloat("{{ activity.lat|default:'0' }}");
+    var activityLon = parseFloat("{{ activity.lon|default:'0' }}");
 
-  document.addEventListener("DOMContentLoaded", function() {
-    function showMap(userLat, userLon, activityLat, activityLon) {
-      let centerLat, centerLon, zoomLevel = 13;
-      const hasUser = userLat !== null && userLon !== null && !isNaN(userLat) && !isNaN(userLon);
-      const hasActivity = activityLat !== 0 && activityLon !== 0;
+    document.addEventListener("DOMContentLoaded", function() {
+      function showMap(userLat, userLon, activityLat, activityLon) {
+        let centerLat, centerLon, zoomLevel = 13;
+        const hasUser = userLat !== null && userLon !== null && !isNaN(userLat) && !isNaN(userLon);
+        const hasActivity = activityLat !== 0 && activityLon !== 0;
 
-      if (hasUser && hasActivity) {
-        centerLat = (userLat + activityLat) / 2;
-        centerLon = (userLon + activityLon) / 2;
-      } else if (hasUser) {
-        centerLat = userLat;
-        centerLon = userLon;
-      } else if (hasActivity) {
-        centerLat = activityLat;
-        centerLon = activityLon;
-        zoomLevel = 14;
-      } else {
-        centerLat = 39.0997;
-        centerLon = -94.5786;
-        zoomLevel = 3;
-      }
-
-      const map = L.map("map").setView([centerLat, centerLon], zoomLevel);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors",
-        maxZoom: 19
-      }).addTo(map);
-
-      if (hasUser) {
-        L.marker([userLat, userLon], {
-          icon: L.icon({
-            iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-            iconSize: [32, 32],
-            iconAnchor: [16, 32]
-          })
-        }).addTo(map);
-      }
-
-      if (hasActivity) {
-        L.marker([activityLat, activityLon], {
-          icon: L.icon({
-            iconUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-            iconSize: [32, 32],
-            iconAnchor: [16, 32]
-          })
-        })
-        .addTo(map)
-        .bindPopup(`<b>{{ activity.name|escapejs }}</b>`);
-      }
-
-      setTimeout(() => map.invalidateSize(), 300);
-    }
-
-    if (backendLat !== null && backendLon !== null) {
-      showMap(backendLat, backendLon, activityLat, activityLon);
-    } else if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          showMap(pos.coords.latitude, pos.coords.longitude, activityLat, activityLon);
-        },
-        () => {
-          showMap(null, null, activityLat, activityLon);
+        if (hasUser && hasActivity) {
+          centerLat = (userLat + activityLat) / 2;
+          centerLon = (userLon + activityLon) / 2;
+        } else if (hasUser) {
+          centerLat = userLat;
+          centerLon = userLon;
+        } else if (hasActivity) {
+          centerLat = activityLat;
+          centerLon = activityLon;
+          zoomLevel = 14;
+        } else {
+          centerLat = 39.0997;
+          centerLon = -94.5786;
+          zoomLevel = 3;
         }
-      );
-    } else {
-      showMap(null, null, activityLat, activityLon);
-    }
-  });
-</script>
+
+        const map = L.map("map").setView([centerLat, centerLon], zoomLevel);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "© OpenStreetMap contributors",
+          maxZoom: 19
+        }).addTo(map);
+
+        if (hasUser) {
+          L.marker([userLat, userLon], {
+            icon: L.icon({
+              iconUrl: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+              iconSize: [32, 32],
+              iconAnchor: [16, 32]
+            })
+          }).addTo(map);
+        }
+
+        if (hasActivity) {
+          L.marker([activityLat, activityLon], {
+            icon: L.icon({
+              iconUrl: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+              iconSize: [32, 32],
+              iconAnchor: [16, 32]
+            })
+          })
+          .addTo(map)
+          .bindPopup(`<b>{{ activity.name|escapejs }}</b>`);
+        }
+
+        setTimeout(() => map.invalidateSize(), 300);
+      }
+
+      if (backendLat !== null && backendLon !== null) {
+        showMap(backendLat, backendLon, activityLat, activityLon);
+      } else if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            showMap(pos.coords.latitude, pos.coords.longitude, activityLat, activityLon);
+          },
+          () => {
+            showMap(null, null, activityLat, activityLon);
+          }
+        );
+      } else {
+        showMap(null, null, activityLat, activityLon);
+      }
+    });
+  </script>
 </body>
 </html>
